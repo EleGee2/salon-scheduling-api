@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Staff } from './staff.entity';
+import { Staff } from '../../staff/entities/staff.entity';
 import { Timestamp } from '@common/entities';
 
 @Entity()
@@ -8,7 +8,7 @@ export class WorkingHours extends Timestamp {
   id: number;
 
   @Column()
-  dayOfWeek: number;
+  dayOfWeek: number; // 0 = Sunday, 1 = Monday, etc.
 
   @Column({ type: 'time' })
   startTime: string;

@@ -1,34 +1,75 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Patch, ParseIntPipe } from '@nestjs/common';
 import { ServiceService } from './service.service';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
+import {
+  AssignStaffDto,
+  CreateServiceDto,
+  FetchServiceDto,
+  FetchStaffAvailibilityDto,
+  UpdateServiceDto,
+} from './dto/req.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { PaginatedSuccessResponseObject, SuccessResponseObject } from '@common/utils/http';
+import { getPagingMeta } from '@common/utils/pagination';
 
-@Controller('service')
+@ApiTags('Services')
+@Controller('services')
 export class ServiceController {
-  constructor(private readonly serviceService: ServiceService) {}
+  constructor(private readonly service: ServiceService) {}
 
   @Post()
-  create(@Body() createServiceDto: CreateServiceDto) {
-    return this.serviceService.create(createServiceDto);
+  async createService(@Body() data: CreateServiceDto) {
+    const service = await this.service.createService(data);
+
+    return new SuccessResponseObject('service created successfully', service);
   }
 
   @Get()
-  findAll() {
-    return this.serviceService.findAll();
-  }
+  async fetchServices(@Query() query: FetchServiceDto) {
+    const page = query.page ?? 1;
+    const size = query.size ?? 10;
+    const { data, total } = await this.service.findServices({ ...query, page, size });
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.serviceService.findOne(+id);
+    return new PaginatedSuccessResponseObject(
+      'services retrieved',
+      data,
+      getPagingMeta({ ...query, page, size }, total),
+    );
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
-    return this.serviceService.update(+id, updateServiceDto);
+  async updateService(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateServiceDto) {
+    const service = await this.service.updateService({ id, ...data });
+
+    return new SuccessResponseObject('service updated successfully', service);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.serviceService.remove(+id);
+  @Post('/:id/staff')
+  async assignStaff(@Param('id', ParseIntPipe) id: number, @Body() data: AssignStaffDto) {
+    const service = await this.service.assignServiceStaff({
+      serviceId: id,
+      staffIds: data.staffIds,
+    });
+
+    return new SuccessResponseObject('assigned staff to service successfully', service);
+  }
+
+  @Get('/:id/staff')
+  async fetchAssignedStaff(@Param('id', ParseIntPipe) id: number) {
+    const staffs = await this.service.fetchServiceStaff({ serviceId: id });
+
+    return new SuccessResponseObject('service staff fetched successfully', staffs);
+  }
+
+  @Get('/:id/availability')
+  async fetchServiceStaffAvailabilty(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: FetchStaffAvailibilityDto,
+  ) {
+    const schedules = await this.service.fetchServiceStaffAvailabilty({
+      serviceId: id,
+      date: query.date,
+    });
+
+    return new SuccessResponseObject('staff availability fetched successfully', schedules);
   }
 }

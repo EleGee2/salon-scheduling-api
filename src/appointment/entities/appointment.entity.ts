@@ -1,6 +1,6 @@
 import { Timestamp } from '@common/entities';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Staff } from './staff.entity';
+import { Staff } from '../../staff/entities/staff.entity';
 
 @Entity()
 export class Appointment extends Timestamp {

@@ -9,8 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigOpts } from '@config/orm.config';
 import { ServiceModule } from './service/service.module';
 import { StaffModule } from './staff/staff.module';
-import { WorkinghoursModule } from './workinghours/workinghours.module';
 import { AppointmentModule } from './appointment/appointment.module';
+import { AvailabilityModule } from './availability/availability.module';
 
 @Module({
   imports: [
@@ -19,8 +19,8 @@ import { AppointmentModule } from './appointment/appointment.module';
     TypeOrmModule.forRootAsync(TypeOrmConfigOpts),
     ServiceModule,
     StaffModule,
-    WorkinghoursModule,
     AppointmentModule,
+    AvailabilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

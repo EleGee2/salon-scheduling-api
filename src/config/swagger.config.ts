@@ -41,7 +41,7 @@ export class PaginatedResponseDto {
 
 export const setupSwagger = (app: NestExpressApplication) => {
   const config = new DocumentBuilder()
-    .setTitle('mira core api')
+    .setTitle('salon scheduling api')
     .setDescription('pos for ambitious businesses')
     .setVersion('0.0.1')
     .addBearerAuth()

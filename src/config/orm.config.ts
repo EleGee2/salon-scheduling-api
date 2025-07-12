@@ -24,7 +24,7 @@ const getOpts = (c: ConfigService<AppConfig>): TypeOrmModuleOptions => {
     autoLoadEntities: true,
     url: db.url,
     logging: true,
-    entities: ['dist/models/**/*.entity.js'],
+    entities: ['dist/**/entities/*.entity.js'],
     migrations: ['dist/migrations/*.ts'],
     migrationsTableName: '__migrations',
     poolSize: cleanDbConnValue(db.pool.max),
@@ -40,7 +40,7 @@ export const TypeOrmConfigOpts: TypeOrmModuleAsyncOptions = {
 export default new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
-  entities: ['src/models/**/*.entity.ts'],
+  entities: ['src/**/entities/*.entity.ts'],
   migrations: ['migrations/*.ts'],
   migrationsTableName: '__migrations',
   synchronize: false,
