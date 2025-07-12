@@ -17,11 +17,7 @@ export interface AppConfig {
     requestLoggerEnabled: boolean;
   };
   database: {
-    host: string;
-    user: string;
-    password: string;
-    database: string;
-    port: number;
+    url: string;
     pool: {
       max: string;
     };
@@ -37,11 +33,7 @@ const config = (): AppConfig => ({
     requestLoggerEnabled: Boolean(+process.env.LOGGING_REQUEST_LOGGER_ENABLED!),
   },
   database: {
-    host: process.env.DATABASE_HOST!,
-    user: process.env.DATABASE_USER!,
-    password: process.env.DATABASE_PASSWORD!,
-    database: process.env.DATABASE_NAME!,
-    port: +process.env.DATABASE_PORT!,
+    url: process.env.DATABASE_URL!,
     pool: {
       max: process.env.DATABASE_POOL_MAX!,
     },
@@ -56,12 +48,7 @@ const configSchema = Joi.object({
     .required(),
   LOGGING_LEVEL: Joi.string().default('info'),
   LOGGING_REQUEST_LOGGER_ENABLED: Joi.string().allow('0', '1').default('1'),
-  DATABASE_HOST: Joi.string().required(),
-  DATABASE_USER: Joi.string().required(),
-  DATABASE_PASSWORD: Joi.string().required(),
-  DATABASE_PORT: Joi.number().required(),
-  DATABASE_NAME: Joi.string().required(),
-  DATABASE_POOL_MAX: Joi.number().default(10),
+  DATABASE_URL: Joi.string().required(),
 });
 
 export const configModuleOpts: ConfigModuleOptions = {

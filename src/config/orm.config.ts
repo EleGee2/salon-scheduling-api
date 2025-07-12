@@ -18,17 +18,13 @@ const getOpts = (c: ConfigService<AppConfig>): TypeOrmModuleOptions => {
   const db = c.get('database', { infer: true })!;
 
   const opts: TypeOrmModuleOptions = {
-    type: 'mysql',
+    type: 'postgres',
     synchronize: false,
     migrationsRun: false,
     autoLoadEntities: true,
-    host: db.host,
+    url: db.url,
     logging: true,
-    entities: ['dist/**/*.entity.js'],
-    username: db.user,
-    password: db.password,
-    database: db.database,
-    port: db.port,
+    entities: ['dist/models/**/*.entity.js'],
     migrations: ['dist/migrations/*.ts'],
     migrationsTableName: '__migrations',
     poolSize: cleanDbConnValue(db.pool.max),
@@ -41,15 +37,10 @@ export const TypeOrmConfigOpts: TypeOrmModuleAsyncOptions = {
   useFactory: (c: ConfigService<AppConfig>) => getOpts(c),
 };
 
-// DataSource configuration for TypeORM CLI
 export default new DataSource({
-  type: 'mysql',
-  host: process.env.DATABASE_HOST,
-  port: parseInt(process.env.DATABASE_PORT || '3306'),
-  username: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  entities: ['src/**/*.entity.ts'],
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  entities: ['src/models/**/*.entity.ts'],
   migrations: ['migrations/*.ts'],
   migrationsTableName: '__migrations',
   synchronize: false,
