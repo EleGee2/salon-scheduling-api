@@ -11,6 +11,7 @@ import { ServiceModule } from './service/service.module';
 import { StaffModule } from './staff/staff.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { AvailabilityModule } from './availability/availability.module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AvailabilityModule } from './availability/availability.module';
     StaffModule,
     AppointmentModule,
     AvailabilityModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [AppService],

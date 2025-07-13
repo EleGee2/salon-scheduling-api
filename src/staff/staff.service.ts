@@ -13,7 +13,7 @@ export class StaffService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async createStaff(data: CreateStaffArg) {
+  async createStaff(data: CreateStaffArg): Promise<Staff> {
     const { workingHours, ...staffDetails } = data;
 
     const queryRunner = this.dataSource.createQueryRunner();

@@ -22,6 +22,10 @@ export interface AppConfig {
       max: string;
     };
   };
+  webhook: {
+    url: string;
+    secret: string;
+  };
 }
 
 const config = (): AppConfig => ({
@@ -37,6 +41,10 @@ const config = (): AppConfig => ({
     pool: {
       max: process.env.DATABASE_POOL_MAX!,
     },
+  },
+  webhook: {
+    url: process.env.WEBHOOK_URL!,
+    secret: process.env.WEBHOOK_SECRET!,
   },
 });
 
