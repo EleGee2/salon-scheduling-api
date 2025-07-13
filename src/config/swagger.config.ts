@@ -42,9 +42,9 @@ export class PaginatedResponseDto {
 export const setupSwagger = (app: NestExpressApplication) => {
   const config = new DocumentBuilder()
     .setTitle('salon scheduling api')
-    .setDescription('pos for ambitious businesses')
+    .setDescription('Salon Scheduling For Ambitious Business')
     .setVersion('0.0.1')
-    .addBearerAuth()
+    .addApiKey({ name: 'x-api-key', type: 'apiKey', in: 'header' })
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {

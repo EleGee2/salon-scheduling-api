@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { StaffService } from './staff.service';
-import { CreateStaffDto } from './dto/create-staff.dto';
+import { CreateStaffDto, FetchStaffDto } from './dto/req.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginatedSuccessResponseObject, SuccessResponseObject } from '@common/utils/http';
-import { FetchStaffDto } from './dto/fetch-staff.dto';
 import { getPagingMeta } from '@common/utils/pagination';
 
 @ApiTags('Staffs')

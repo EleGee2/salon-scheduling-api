@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { CreateAppointmentDto } from './dto/req.dto';
 import { SuccessResponseObject } from '@common/utils/http';
 import { ApiKeyAuthGuard } from '@src/auth/auth.guard';
 
