@@ -12,6 +12,7 @@ export interface AppConfig {
   port: number;
   nodeEnv: string;
   appEnv: AppEnv;
+  apiKey: string;
   logging: {
     level: string;
     requestLoggerEnabled: boolean;
@@ -26,12 +27,16 @@ export interface AppConfig {
     url: string;
     secret: string;
   };
+  cache: {
+    ttl: number;
+  };
 }
 
 const config = (): AppConfig => ({
   port: +process.env.PORT!,
   nodeEnv: process.env.NODE_ENV!,
   appEnv: process.env.APP_ENV! as AppEnv,
+  apiKey: process.env.API_KEY!,
   logging: {
     level: process.env.LOGGING_LEVEL!,
     requestLoggerEnabled: Boolean(+process.env.LOGGING_REQUEST_LOGGER_ENABLED!),
@@ -46,6 +51,9 @@ const config = (): AppConfig => ({
     url: process.env.WEBHOOK_URL!,
     secret: process.env.WEBHOOK_SECRET!,
   },
+  cache: {
+    ttl: +process.env.CACHE_TTL!,
+  },
 });
 
 const configSchema = Joi.object({
@@ -57,6 +65,10 @@ const configSchema = Joi.object({
   LOGGING_LEVEL: Joi.string().default('info'),
   LOGGING_REQUEST_LOGGER_ENABLED: Joi.string().allow('0', '1').default('1'),
   DATABASE_URL: Joi.string().required(),
+  CACHE_TTL: Joi.string().default(5),
+  WEBHOOK_URL: Joi.string(),
+  WEBHOOK_SECRET: Joi.string(),
+  API_KEY: Joi.string().required(),
 });
 
 export const configModuleOpts: ConfigModuleOptions = {

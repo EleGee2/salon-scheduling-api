@@ -15,6 +15,8 @@ import { AvailabilityModule } from './availability/availability.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { graphQLModuleOpts } from '@config/graphql.config';
+import { CacheModule } from '@nestjs/cache-manager';
+import { CacheConfigOpts } from '@config/cache.config';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { graphQLModuleOpts } from '@config/graphql.config';
     LoggerModule.forRootAsync(loggerModuleOpts),
     TypeOrmModule.forRootAsync(TypeOrmConfigOpts),
     GraphQLModule.forRoot(graphQLModuleOpts),
+    CacheModule.registerAsync(CacheConfigOpts),
     ServiceModule,
     StaffModule,
     AppointmentModule,

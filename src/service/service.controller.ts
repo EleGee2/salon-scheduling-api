@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Patch,
+  ParseIntPipe,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ServiceService } from './service.service';
 import {
   AssignStaffDto,
@@ -10,6 +21,8 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { PaginatedSuccessResponseObject, SuccessResponseObject } from '@common/utils/http';
 import { getPagingMeta } from '@common/utils/pagination';
+import { ApiKeyAuthGuard } from '@src/auth/auth.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @ApiTags('Services')
 @Controller('services')
@@ -17,6 +30,7 @@ export class ServiceController {
   constructor(private readonly service: ServiceService) {}
 
   @Post()
+  @UseGuards(ApiKeyAuthGuard)
   async createService(@Body() data: CreateServiceDto) {
     const service = await this.service.createService(data);
 
@@ -37,6 +51,7 @@ export class ServiceController {
   }
 
   @Patch(':id')
+  @UseGuards(ApiKeyAuthGuard)
   async updateService(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateServiceDto) {
     const service = await this.service.updateService({ id, ...data });
 
@@ -44,6 +59,7 @@ export class ServiceController {
   }
 
   @Post('/:id/staff')
+  @UseGuards(ApiKeyAuthGuard)
   async assignStaff(@Param('id', ParseIntPipe) id: number, @Body() data: AssignStaffDto) {
     const service = await this.service.assignServiceStaff({
       serviceId: id,
@@ -54,6 +70,7 @@ export class ServiceController {
   }
 
   @Get('/:id/staff')
+  @UseGuards(ApiKeyAuthGuard)
   async fetchAssignedStaff(@Param('id', ParseIntPipe) id: number) {
     const staffs = await this.service.fetchServiceStaff({ serviceId: id });
 
@@ -61,6 +78,8 @@ export class ServiceController {
   }
 
   @Get('/:id/availability')
+  @UseGuards(ApiKeyAuthGuard)
+  @UseInterceptors(CacheInterceptor)
   async fetchServiceStaffAvailabilty(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: FetchStaffAvailibilityDto,
