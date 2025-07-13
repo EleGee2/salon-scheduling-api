@@ -274,9 +274,9 @@ The application uses PostgreSQL with the following main entities:
 - `endTime` (Appointment end time with timezone)
 - `created_at`, `updated_at`, `deleted_at` (Timestamps)
 
-### Communication Test
+## Communication Test 
 
-#### Concept - Caching
+### Concept - Caching
 
 Imagine you’re a librarian in a massive library (your server). Every time a student asks for a popular book, you walk to the far end of the library to fetch it over and over again.
 
