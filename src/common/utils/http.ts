@@ -39,9 +39,7 @@ export class SuccessResponseObject<T = unknown> extends BaseResponseObject {
   }
 }
 
-export class PaginatedSuccessResponseObject<
-  T = unknown,
-> extends SuccessResponseObject<T> {
+export class PaginatedSuccessResponseObject<T = unknown> extends SuccessResponseObject<T> {
   public meta: Meta;
 
   constructor(message: string, data: T, paging: Paging) {
