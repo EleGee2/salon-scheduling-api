@@ -39,6 +39,7 @@ A robust NestJS API for managing salon services, staff, availability, and appoin
 * [Deployment](#-deployment)
 * [Built With](#-built-with)
 * [Contributing](#-contributing)
+* [Communication Test](#-communication-test)
 * [License](#-license)
 
 ## 🚀 Getting Started
