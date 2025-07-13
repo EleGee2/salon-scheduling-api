@@ -19,8 +19,19 @@ async function bootstrap() {
 
   app.set('trust proxy', true);
   app.useLogger(app.get(Logger));
-  app.use(helmet());
-  // app.enableVersioning();
+  app.use(
+    helmet({
+      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          imgSrc: [`'self'`, 'data:', 'apollo-server-landing-page.cdn.apollographql.com'],
+          scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+          manifestSrc: [`'self'`, 'apollo-server-landing-page.cdn.apollographql.com'],
+          frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
+        },
+      },
+    }),
+  );
 
   app.useGlobalFilters(new GlobalExceptionFilter());
 
