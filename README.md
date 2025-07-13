@@ -58,7 +58,7 @@ You need to have the following software installed on your machine:
 
 1.  **Clone the repository**
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/EleGee2/salon-scheduling-api.git
     cd salon-scheduling-api
     ```
 
