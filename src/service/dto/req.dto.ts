@@ -45,6 +45,7 @@ export class FetchServiceDto extends PaginationDto {
 export class UpdateServiceDto extends PartialType(CreateServiceDto) {}
 
 export class AssignStaffDto {
+  @ApiProperty()
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
@@ -52,6 +53,7 @@ export class AssignStaffDto {
 }
 
 export class FetchStaffAvailibilityDto {
+  @ApiProperty()
   @IsDateString()
   @IsNotEmpty()
   date: string;
