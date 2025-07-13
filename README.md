@@ -276,6 +276,15 @@ The application uses PostgreSQL with the following main entities:
 - `endTime` (Appointment end time with timezone)
 - `created_at`, `updated_at`, `deleted_at` (Timestamps)
 
+### Communication Test
+
+#### Concept - Caching
+
+Imagine you’re a librarian in a massive library (your server). Every time a student asks for a popular book, you walk to the far end of the library to fetch it over and over again.
+
+To save time, you start keeping a copy of that book right behind your desk. Now, when other students ask for it, you hand it over instantly.
+
+That’s caching: storing frequently requested data in a quicker-to-access spot, so the system doesn’t have to do the same work repeatedly. It speeds things up and reduces the load on the main system.
 
 ## 🛠️ Built With
 
