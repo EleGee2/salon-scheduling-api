@@ -1,0 +1,14 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Query {
+  availability(date: String!, serviceId: Int!): [StaffAvailability!]!
+  healthCheck: String!
+}
+
+type StaffAvailability {
+  availableSlots: [String!]!
+  staffId: Int!
+  staffName: String!
+}
