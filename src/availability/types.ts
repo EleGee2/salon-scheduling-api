@@ -8,3 +8,8 @@ export interface StaffAvailability {
   staffName: string;
   availableSlots: string[];
 }
+
+export interface WorkdayBounds {
+  start: Date;
+  end: Date;
+}
