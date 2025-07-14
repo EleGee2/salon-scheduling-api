@@ -149,7 +149,7 @@ describe('AvailabilityService', () => {
 
       await expect(
         service.getAvailability({ serviceId: 999, date: queryDto.date }),
-      ).rejects.toThrow(new NotFoundException('Service with ID #999 not found'));
+      ).rejects.toThrow(new NotFoundException('service not found'));
     });
   });
 });

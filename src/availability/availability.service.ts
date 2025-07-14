@@ -3,7 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Appointment } from '@src/appointment/entities/appointment.entity';
 import { Service } from '@src/service/entities/service.entity';
 import { Between, Repository } from 'typeorm';
-import { FetchAvailabityArg, StaffAvailability, WorkdayBounds } from './types';
+import {
+  FetchAppointmentsForDayArg,
+  FetchAvailabityArg,
+  FindServiceWithRelationsArg,
+  GenerateAvailableSlots,
+  GetWorkdayBoundsArg,
+  IsSlotFreeArg,
+  StaffAvailability,
+  WorkdayBounds,
+} from './types';
 import {
   addMinutes,
   endOfDay,
@@ -15,7 +24,6 @@ import {
   format,
 } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
-import { Staff } from '@src/staff/entities/staff.entity';
 
 @Injectable()
 export class AvailabilityService {
@@ -28,17 +36,17 @@ export class AvailabilityService {
 
   async getAvailability(data: FetchAvailabityArg): Promise<StaffAvailability[]> {
     const { date, serviceId } = data;
-    const service = await this.findServiceWithRelations(serviceId);
+    const service = await this.findServiceWithRelations({ serviceId });
     const requestedDate = parseISO(date);
 
     const availabilityPromises = service.staff.map(async (staff) => {
-      const workday = this.getWorkdayBounds(staff, requestedDate);
+      const workday = this.getWorkdayBounds({ staff, date: requestedDate });
       if (!workday) {
         return { staffId: staff.id, staffName: staff.name, availableSlots: [] };
       }
 
-      const appointments = await this.fetchAppointmentsForDay(staff, requestedDate);
-      const availableSlots = this.generateAvailableSlots(workday, appointments, service);
+      const appointments = await this.fetchAppointmentsForDay({ staff, date: requestedDate });
+      const availableSlots = this.generateAvailableSlots({ workday, appointments, service });
 
       return { staffId: staff.id, staffName: staff.name, availableSlots };
     });
@@ -50,13 +58,13 @@ export class AvailabilityService {
    * Fetches the service and its required relations from the database.
    * @throws {NotFoundException} if the service is not found.
    */
-  private async findServiceWithRelations(serviceId: number): Promise<Service> {
+  private async findServiceWithRelations(data: FindServiceWithRelationsArg): Promise<Service> {
     const service = await this.serviceRepo.findOne({
-      where: { id: serviceId },
+      where: { id: data.serviceId },
       relations: ['staff', 'staff.workingHours'],
     });
     if (!service) {
-      throw new NotFoundException(`Service with ID #${serviceId} not found`);
+      throw new NotFoundException(`service not found`);
     }
     return service;
   }
@@ -65,15 +73,15 @@ export class AvailabilityService {
    * Determines the start and end of a staff member's workday in their local timezone.
    * @returns The start and end Date objects, or null if they are not working.
    */
-  private getWorkdayBounds(staff: Staff, date: Date): WorkdayBounds | null {
-    const dayOfWeek = getDay(date);
-    const workingHours = staff.workingHours.find((wh) => wh.dayOfWeek === dayOfWeek);
+  private getWorkdayBounds(data: GetWorkdayBoundsArg): WorkdayBounds | null {
+    const dayOfWeek = getDay(data.date);
+    const workingHours = data.staff.workingHours.find((wh) => wh.dayOfWeek === dayOfWeek);
 
     if (!workingHours) {
       return null;
     }
 
-    const dateString = format(date, 'yyyy-MM-dd');
+    const dateString = format(data.date, 'yyyy-MM-dd');
     const start = parseISO(`${dateString}T${workingHours.startTime}`);
     const end = parseISO(`${dateString}T${workingHours.endTime}`);
 
@@ -83,7 +91,8 @@ export class AvailabilityService {
   /**
    * Fetches all appointments for a given staff member on a specific day.
    */
-  private async fetchAppointmentsForDay(staff: Staff, date: Date): Promise<Appointment[]> {
+  private async fetchAppointmentsForDay(data: FetchAppointmentsForDayArg): Promise<Appointment[]> {
+    const { staff, date } = data;
     const dayStartUTC = fromZonedTime(startOfDay(date), staff.timezone);
     const dayEndUTC = fromZonedTime(endOfDay(date), staff.timezone);
 
@@ -98,11 +107,8 @@ export class AvailabilityService {
   /**
    * Generates a list of available 30-minute time slots.
    */
-  private generateAvailableSlots(
-    workday: WorkdayBounds,
-    appointments: Appointment[],
-    service: Service,
-  ): string[] {
+  private generateAvailableSlots(data: GenerateAvailableSlots): string[] {
+    const { workday, appointments, service } = data;
     const availableSlots: string[] = [];
     let currentSlot = workday.start;
 
@@ -110,7 +116,7 @@ export class AvailabilityService {
       const slotEnd = addMinutes(currentSlot, service.duration);
 
       if (isBefore(slotEnd, workday.end) || isEqual(slotEnd, workday.end)) {
-        if (this.isSlotFree(currentSlot, slotEnd, appointments, service)) {
+        if (this.isSlotFree({ slotStart: currentSlot, slotEnd, appointments, service })) {
           availableSlots.push(format(currentSlot, 'HH:mm'));
         }
       }
@@ -123,12 +129,8 @@ export class AvailabilityService {
    * Checks if a single time slot conflicts with any existing appointments, including buffer time.
    * This is the core conflict-detection logic.
    */
-  private isSlotFree(
-    slotStart: Date,
-    slotEnd: Date,
-    appointments: Appointment[],
-    service: Service,
-  ): boolean {
+  private isSlotFree(data: IsSlotFreeArg): boolean {
+    const { slotStart, slotEnd, appointments, service } = data;
     for (const app of appointments) {
       const appStartLocal = toZonedTime(app.startTime, service.staff[0].timezone);
       const appEndLocalWithBuffer = addMinutes(
